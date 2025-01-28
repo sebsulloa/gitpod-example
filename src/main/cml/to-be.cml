@@ -1,0 +1,72 @@
+Domain GestionImagenesMedicasIA {
+    domainVisionStatement = "Recolectar, procesar y distribuir imágenes médicas y diagnósticos anonimizados para entrenamiento de modelos de inteligencia artificial"
+    
+    Subdomain CargaDatos {
+        type = CORE_DOMAIN
+        domainVisionStatement = "Administrar la ingestión y almacenamiento de datos médicos proviniente de diferentes partners"
+    }
+    
+    Subdomain Anonimizacion {
+        type = CORE_DOMAIN
+        domainVisionStatement = "Garantizar la privacidad y seguridad de datos médicos mediante procesos automatizados y manuales de anonimización específicos por modalidad y región anatómica"
+    }
+
+    Subdomain Procesamiento {
+        type = CORE_DOMAIN
+        domainVisionStatement = "Clasificar y transformar datos médicos crudos en datasets estructurados y etiquetados"
+    }
+    
+    Subdomain DistribucionDatos {
+        type = CORE_DOMAIN
+        domainVisionStatement = "Proveer acceso seguro y eficiente de datos médicos anonimizados para los diferentes planes"
+    }
+    
+    Subdomain Seguridad {
+        type = GENERIC_SUBDOMAIN
+        domainVisionStatement = "Implementar controles de seguridad y cumplimiento normativo por región"
+    }
+}
+
+BoundedContext CargaDatos implements CargaDatos {
+    type = FEATURE
+    domainVisionStatement = "Gestionar la carga y almacenamiento de datos médicos"
+}
+
+BoundedContext ContextoPreparacionDatosUSA implements Anonimizacion, Procesamiento {
+    type = FEATURE
+    domainVisionStatement = "Gestionar la anonimización y procesamiento segura de datos médicos según modalidad y región"
+}
+
+BoundedContext ContextoPreparacionDatosLATAM implements Anonimizacion, Procesamiento {
+    type = FEATURE
+    domainVisionStatement = "Gestionar la anonimización y procesamiento segura de datos médicos según modalidad y región"
+}
+
+BoundedContext ContextoDistribucion implements DistribucionDatos {
+    type = FEATURE
+    domainVisionStatement = "Gestionar el acceso y distribución de datos para clientes"
+}
+
+BoundedContext ContextoSeguridad implements Seguridad {
+    type = FEATURE
+    domainVisionStatement = "Asegurar el cumplimiento normativo y la seguridad de datos"
+}
+
+ContextMap SaludTechMap {
+    state = AS_IS
+    
+    contains CargaDatos
+    contains ContextoPreparacionDatosUSA
+    contains ContextoPreparacionDatosLATAM
+    contains ContextoDistribucion
+    contains ContextoSeguridad
+    
+    CargaDatos [U]->[D,ACL] ContextoPreparacionDatosUSA
+    CargaDatos [U]->[D,ACL] ContextoPreparacionDatosLATAM
+    ContextoPreparacionDatosUSA [U]->[D] ContextoDistribucion
+    ContextoPreparacionDatosLATAM [U]->[D] ContextoDistribucion
+    ContextoSeguridad [U]->[D,CF] ContextoDistribucion
+    ContextoSeguridad [U]->[D,CF] ContextoPreparacionDatosUSA
+    ContextoSeguridad [U]->[D,CF] ContextoPreparacionDatosLATAM
+    ContextoSeguridad [U]->[D,CF] CargaDatos
+}
